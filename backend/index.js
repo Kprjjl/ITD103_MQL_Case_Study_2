@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const trashRoutes = require('./routes/trashRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,7 @@ mongoose.connect('mongodb://127.0.0.1/case_study2_db')
     .catch(err => console.log(err));
 
 app.use(trashRoutes);
+app.use(analyticsRoutes);
 
 app.get('/', (req, res) => {
     console.log('Hello World');
