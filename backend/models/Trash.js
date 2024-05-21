@@ -19,6 +19,6 @@ const TrashSchema = new mongoose.Schema({
     }
 }, { _id: false });
 
-const TrashModel = mongoose.model("Trash", TrashSchema);
+const TrashModel = mongoose.model("trashes", TrashSchema);
 
 module.exports = TrashModel;

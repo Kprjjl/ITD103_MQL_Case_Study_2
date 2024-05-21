@@ -5,13 +5,13 @@ const TrashModel = require('../models/Trash');
 const { postTrashMiddleware } = require('../middleware/trash-middleware');
 
 // ------------------- Trash CRUD -------------------
-
 router.get('/trash', async (req, res) => {
     const trash = await TrashModel.find();
     res.json(trash);
 });
 
 router.post('/trash', postTrashMiddleware, async (req, res) => {
+    console.log("posting")
     const { device_id } = req.body;
     const trash = new TrashModel({ _id: device_id });
     await trash.save();
@@ -25,7 +25,7 @@ router.put('/trash/:id', async (req, res) => {
     trash.height = height;
     trash.label = label;
     await trash.save();
-    res.json(trash);
+    res.status(200).json(trash);
 });
 
 router.delete('/trash/:id', async (req, res) => {

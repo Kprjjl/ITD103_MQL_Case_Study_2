@@ -13,7 +13,7 @@ const TrashLevelSchema = new mongoose.Schema(
         metadata: {
             trash_id:{
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'Trash',
+                ref: 'trashes',
                 required: true
             }
         }
