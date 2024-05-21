@@ -9,13 +9,13 @@ const char* password = WIFI_PASSWORD;
 
 #define bin_depth 13
 
-Ultrasonic WasteLevel(D6, D5); // Define pins for the ultrasonic sensor (Trig, Echo)
+Ultrasonic WasteLevel(D6, D5);
 
 void setup() {
-  Serial.begin(9600); // Initialize serial communication at 9600 baud
+  Serial.begin(9600);
 
-  WiFi.begin(ssid, password); // Connect to the WiFi network
-  while(WiFi.status() != WL_CONNECTED) { // Wait for the connection to be established
+  WiFi.begin(ssid, password);
+  while(WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.println("Connecting to WiFi...");
   }
@@ -23,9 +23,32 @@ void setup() {
 }
 
 void loop() {
-  // long distance = WasteLevel.read(); // Measure distance in centimeters
-  // Serial.print("Current Waste Level: ");
-  // Serial.println(distance - bin_depth); // Print the measured distance minus bin depth
+  if (WiFi.status() == WL_CONNECTED) {
+    WiFiClient client;
+    HTTPClient http;
 
-  // delay(1000); // Wait for a second before taking another measurement
+    Serial.println("Attempting to connect to the server...");
+
+    http.begin(client, "http://192.168.1.11:3001/");
+
+    int httpCode = http.GET();
+
+    if (httpCode > 0) {
+      Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+
+      if (httpCode == HTTP_CODE_OK) {
+        String payload = http.getString();
+        Serial.println("Received payload:");
+        Serial.println(payload);
+      }
+    } else {
+      Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi not connected");
+  }
+
+  delay(10000);
 }

@@ -18,5 +18,6 @@ app.use(trashRoutes);
 app.use(analyticsRoutes);
 
 app.get('/', (req, res) => {
-    console.log('Hello World');
+    console.log('connection attempt')
+    res.send('Hello World');
 });
