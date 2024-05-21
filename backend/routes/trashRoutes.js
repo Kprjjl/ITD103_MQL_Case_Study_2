@@ -52,4 +52,19 @@ router.get('/trash/:id/trash-level', async (req, res) => {
     res.json(trashLevel);
 });
 
+// trash level per day by trash
+router.get('/trash/:id/trash-level-per-day', async (req, res) => {
+    const { id } = req.params;
+    const trashLevel = await TrashLevelModel.find({ trash: id });
+    const trashLevelPerDay = trashLevel.reduce((acc, curr) => {
+        const date = curr.timestamp.toISOString().split('T')[0];
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(curr);
+        return acc;
+    }, {});
+    res.json(trashLevelPerDay);
+});
+
 module.exports = router;
