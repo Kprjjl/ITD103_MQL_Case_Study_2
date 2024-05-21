@@ -10,3 +10,7 @@ const TrashSchema = new mongoose.Schema({
         default: Date.now
     }
 });
+
+const TrashModel = mongoose.model("Trash", TrashSchema);
+
+module.exports = TrashModel;

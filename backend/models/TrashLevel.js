@@ -16,4 +16,6 @@ const TrashLevelSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('TrashLevel', TrashLevelSchema);
+const TrashLevelModel = mongoose.model('TrashLevel', TrashLevelSchema);
+
+module.exports = TrashLevelModel;
