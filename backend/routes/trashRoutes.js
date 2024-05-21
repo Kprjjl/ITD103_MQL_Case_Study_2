@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const TrashLevelModel = require('../models/TrashLevel');
 const TrashModel = require('../models/Trash');
+const { postTrashMiddleware } = require('../middleware/trash-middleware');
 
 // ------------------- Trash CRUD -------------------
 
@@ -10,18 +11,21 @@ router.get('/trash', async (req, res) => {
     res.json(trash);
 });
 
-router.post('/trash', async (req, res) => {
-    const { height } = req.body;
-    const trash = new TrashModel({ height });
+router.post('/trash', postTrashMiddleware, async (req, res) => {
+    const { device_id } = req.body;
+    const trash = new TrashModel({ _id: device_id });
     await trash.save();
     res.json(trash);
 });
 
 router.put('/trash/:id', async (req, res) => {
     const { id } = req.params;
-    const { height } = req.body;
-    await TrashModel.findByIdAndUpdate(id, { height });
-    res.json({ message: 'Trash updated' });
+    const { height, label } = req.body;
+    const trash = await TrashModel.findById(id);
+    trash.height = height;
+    trash.label = label;
+    await trash.save();
+    res.json(trash);
 });
 
 router.delete('/trash/:id', async (req, res) => {
@@ -38,17 +42,13 @@ router.get('/trash-level', async (req, res) => {
 });
 
 router.post('/trash-level', async (req, res) => {
-    const { trash, trash_level } = req.body;
-    const trashLevel = new TrashLevelModel({ trash, trash_level });
+    const { trash_id, trash_level } = req.body;
+    const trash = await TrashModel.findById(trash_id);
+    if (!trash) {
+        return res.status(404).json({ message: 'Trash not found' });
+    }
+    const trashLevel = new TrashLevelModel({ trash_level, metadata: { trash_id } });
     await trashLevel.save();
-    res.json(trashLevel);
-});
-
-// ------------------- Trash Level by Trash -------------------
-
-router.get('/trash/:id/trash-level', async (req, res) => {
-    const { id } = req.params;
-    const trashLevel = await TrashLevelModel.find({ trash: id });
     res.json(trashLevel);
 });
 
