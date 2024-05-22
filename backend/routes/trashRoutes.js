@@ -49,8 +49,11 @@ router.post('/trash-level', async (req, res) => {
         if (!trash) {
             return res.status(404).json({ message: 'Trash not found' });
         }
-        const trashLevel = new TrashLevelModel({ trash_level, metadata: { trash_id } });
+        const level = trash.height - parseInt(trash_level);
+        trash.current_level = level;
+        const trashLevel = new TrashLevelModel({ trash_level: level, metadata: { trash_id } });
         await trashLevel.save();
+        await trash.save();
         res.json(trashLevel);
     } catch(err) {
         console.log("Error posting trash level:", err.message)

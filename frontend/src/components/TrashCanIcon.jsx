@@ -15,7 +15,7 @@ const TrashCanIcon = ({ color, progressColor, progress, className }) => {
           </stop>
           <stop offset={`0.${progress}`} stop-color={color}>
             <animate attributeName="offset" dur="1s" values={`0;0.${progress}`} fill="freeze"
-                repeatCount="1" />
+              repeatCount="1" />
           </stop>
         </linearGradient>
       </defs>

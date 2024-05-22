@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 import './App.css'
 
 import { 
@@ -6,30 +7,46 @@ import {
   Typography, 
   Card, 
   CardHeader, 
-  CardBody 
+  CardBody,
+  Tooltip,
 } from "@material-tailwind/react";
 
 import TrashCanIcon from './components/TrashCanIcon';
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [level, setLevel] = useState(50)
+  const [trashCans, setTrashCans] = useState([])
+  const [selectedTrashCan, setSelectedTrashCan] = useState(null)
+
+  useEffect(() => {
+    const fetchTrashCans = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/trash')
+        setTrashCans(response.data)
+        setSelectedTrashCan((trashCans.length > 0) ? trashCans[0] : null)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    fetchTrashCans();
+  }, []);
+
+  const debugLog = () => {
+    console.log(trashCans);
+    console.log(selectedTrashCan);
+  };
 
   return (
-    <div className="min-h-screen bg-blue-gray-50/50 p-8">
+    <div className="min-h-screen bg-blue-gray-50/50 p-2">
+      {debugLog()}
       <Card>
         <CardBody>
-        <div className='w-20 h-20 m-3 relative'>
-          <TrashCanIcon color="white" progressColor="lime" progress={level}/>
-        </div>
-          <Button onClick={() => setCount((count) => count + 1)}>
-            <Typography color="white">
-              count is {count}
-            </Typography>
-          </Button>
-          <Typography color="gray">
-            Edit <code>App.jsx</code> and save to test HMR
-          </Typography>
+          <div className='w-40 h-40 m-3 relative w'>
+            <TrashCanIcon 
+              color="white" 
+              progressColor="lime" 
+              progress={selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height * 100)}
+            />
+          </div>
         </CardBody>
       </Card>
     </div>

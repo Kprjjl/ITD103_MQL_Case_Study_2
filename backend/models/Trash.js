@@ -11,7 +11,12 @@ const TrashSchema = new mongoose.Schema({
         default: 100
     },
     label: {
-        type: String
+        type: String,
+        default: "No label"
+    },
+    current_level: {
+        type: Number,
+        default: 0
     },
     created_at: {
         type: Date,
