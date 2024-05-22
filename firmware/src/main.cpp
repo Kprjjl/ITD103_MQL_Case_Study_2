@@ -48,6 +48,7 @@ void loop() {
     if (currentTime - lastPostTime >= postInterval) {
       Serial.println("Interval reached, posting sensor data..");
       postSensorData(distance);
+      lastDistance = distance;
       lastPostTime = currentTime;
     }
   }

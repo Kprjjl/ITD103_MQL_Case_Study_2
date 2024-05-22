@@ -8,7 +8,7 @@ router.get('/average-fill-time', async (req, res) => {
             { $sort: { timestamp: 1 } },
             {
                 $group: {
-                    _id: '$metadata.trash',
+                    _id: '$metadata.trash_id',
                     firstTimestamp: { $first: '$timestamp' },
                     lastTimestamp: { $last: '$timestamp' },
                     totalLevels: { $sum: 1 }
