@@ -20,15 +20,21 @@ function App() {
   useEffect(() => {
     const fetchTrashCans = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/trash')
-        setTrashCans(response.data)
-        setSelectedTrashCan((trashCans.length > 0) ? trashCans[0] : null)
+        const response = await axios.get('http://localhost:3001/trash');
+        setTrashCans(response.data);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    }
+    };
+
     fetchTrashCans();
   }, []);
+
+  useEffect(() => {
+    if (selectedTrashCan === null && trashCans.length > 0) {
+      setSelectedTrashCan(trashCans[0]);
+    }
+  }, [trashCans]);
 
   const debugLog = () => {
     console.log(trashCans);
