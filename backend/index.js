@@ -19,7 +19,6 @@ app.use(trashRoutes);
 app.use(analyticsRoutes);
 
 app.get('/connect/:id', async (req, res) => {
-    console.log('connect');
     const { id } = req.params;
     const trash = await TrashModel.findById(id);
     if (!trash) {

@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const TrashLevelModel = require('../models/TrashLevel');
 const TrashModel = require('../models/Trash');
@@ -42,14 +43,19 @@ router.get('/trash-level', async (req, res) => {
 });
 
 router.post('/trash-level', async (req, res) => {
-    const { trash_id, trash_level } = req.body;
-    const trash = await TrashModel.findById(trash_id);
-    if (!trash) {
-        return res.status(404).json({ message: 'Trash not found' });
+    try{
+        const { trash_id, trash_level } = req.body;
+        const trash = await TrashModel.findById(trash_id);
+        if (!trash) {
+            return res.status(404).json({ message: 'Trash not found' });
+        }
+        const trashLevel = new TrashLevelModel({ trash_level, metadata: { trash_id } });
+        await trashLevel.save();
+        res.json(trashLevel);
+    } catch(err) {
+        console.log("Error posting trash level:", err.message)
+        res.status(500).json({ message: err.message });
     }
-    const trashLevel = new TrashLevelModel({ trash_level, metadata: { trash_id } });
-    await trashLevel.save();
-    res.json(trashLevel);
 });
 
 module.exports = router;
