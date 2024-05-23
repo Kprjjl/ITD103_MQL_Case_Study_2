@@ -66,14 +66,52 @@ router.get('/trash-level/:id/:unit', async (req, res) => {
         const { id, unit } = req.params;
 
         const groupBy = (unit) => {
-            const dateParts = {
-                year: { $year: '$timestamp' }
-            };
-
-            if (unit !== 'year') dateParts.month = { $month: '$timestamp' };
-            if (unit === 'day' || unit === 'hour' || unit === 'minute') dateParts.day = { $dayOfMonth: '$timestamp' };
-            if (unit === 'hour' || unit === 'minute') dateParts.hour = { $hour: '$timestamp' };
-            if (unit === 'minute') dateParts.minute = { $minute: '$timestamp' };
+            let dateParts = {};
+            switch (unit) {
+                case 'minute':
+                    dateParts = {
+                        year: { $year: '$timestamp' },
+                        month: { $month: '$timestamp' },
+                        day: { $dayOfMonth: '$timestamp' },
+                        hour: { $hour: '$timestamp' },
+                        minute: { $minute: '$timestamp' }
+                    };
+                    break;
+                case 'hour':
+                    dateParts = {
+                        year: { $year: '$timestamp' },
+                        month: { $month: '$timestamp' },
+                        day: { $dayOfMonth: '$timestamp' },
+                        hour: { $hour: '$timestamp' }
+                    };
+                    break;
+                case 'day':
+                    dateParts = {
+                        year: { $year: '$timestamp' },
+                        month: { $month: '$timestamp' },
+                        day: { $dayOfMonth: '$timestamp' }
+                    };
+                    break;
+                case 'week':
+                    dateParts = {
+                        isoWeekYear: { $isoWeekYear: '$timestamp' },
+                        isoWeek: { $isoWeek: '$timestamp' }
+                    };
+                    break;
+                case 'month':
+                    dateParts = {
+                        year: { $year: '$timestamp' },
+                        month: { $month: '$timestamp' }
+                    };
+                    break;
+                case 'year':
+                    dateParts = {
+                        year: { $year: '$timestamp' }
+                    };
+                    break;
+                default:
+                    throw new Error('Invalid time unit');
+            }
 
             return [
                 { $match: { 'metadata.trash_id': id } },
@@ -88,7 +126,7 @@ router.get('/trash-level/:id/:unit', async (req, res) => {
             ];
         };
 
-        const validUnits = ['minute', 'hour', 'day', 'month', 'year'];
+        const validUnits = ['minute', 'hour', 'day', 'week', 'month', 'year'];
         if (!validUnits.includes(unit)) {
             return res.status(400).json({ message: 'Invalid time unit parameter' });
         }
@@ -101,5 +139,6 @@ router.get('/trash-level/:id/:unit', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 module.exports = router;

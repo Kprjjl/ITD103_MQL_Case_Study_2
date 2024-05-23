@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
 import { 
-  Button, 
+  Button, ButtonGroup,
   Typography, 
   Card, 
   CardHeader, CardBody, CardFooter,
@@ -22,6 +22,7 @@ function App() {
   const [selectedTrashCan, setSelectedTrashCan] = useState(null);
   const [trashLevelsData, setTrashLevelsData] = useState([]);
   const [searchLabel, setSearchLabel] = useState('');
+  const [dtUnits, setDtUnits] = useState('minute');
 
   function getLevelColor(value) {
     var hue = ((1 - value) * 120).toString(10);
@@ -93,7 +94,7 @@ function App() {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50 p-2">
@@ -188,14 +189,15 @@ function App() {
         </Card>
 
         <Card>
-          <CardHeader floated={false} shadow={false}></CardHeader>
+          <CardHeader floated={false} shadow={false}>
+          </CardHeader>
           <CardBody>
             {selectedTrashCan && (
               <TrashLevelsChart 
                 trashCan={selectedTrashCan}
                 trashLevelsData={trashLevelsData} 
                 lineColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
-                dtUnits="minute"
+                dtUnits={dtUnits}
               />
             )}
           </CardBody>

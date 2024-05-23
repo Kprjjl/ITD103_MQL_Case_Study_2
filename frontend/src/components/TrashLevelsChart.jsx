@@ -4,17 +4,23 @@ import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
 export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits }) {
-    const formatOptions = {
-        "datetime": "%Y-%m-%d %H:%M:%S",
-        "date": "%Y-%m-%d",
-        "time": "%H:%M:%S",
+    const xDateFormatOptions = {
+        minute: "%e %b %Y %H:%M:%S",
+        hour: "%e %b %Y %H:%M:%S",
+        day: '%e %b',
+        week: '%e %b',
+        month: '%b \'%y',
+        year: '%Y',
     };
-
     const [data, setData] = useState([]);
-    const [datetimeFormat, setDatetimeFormat] = useState("time");
     const [chartOptions, setChartOptions] = useState({
         title: {
             text: "",
+        },
+        yAxis: {
+            labels: {
+                format: '{value:.0f}'
+            }
         },
         xAxis: {
             type: 'datetime',
@@ -22,10 +28,11 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
                 text: "Timestamp",
             },
             labels: {
-                rotation: -45,
+                // rotation: -45,
                 step: 1,
             },
             dateTimeLabelFormats: {
+                minute: '%H:%M',
                 hour: '%H:%M',
                 day: '%e. %b',
                 week: '%e. %b',
@@ -34,8 +41,12 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
             },
         },
         tooltip: {
-            xDateFormat: formatOptions[datetimeFormat],
+            xDateFormat: xDateFormatOptions[dtUnits],
             valueSuffix: "cm",
+            formatter: function () {
+                return `${Highcharts.dateFormat(xDateFormatOptions[dtUnits], this.x)}<br>
+                    <span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${this.y.toFixed(0)} cm</b>`;
+            },
         },
         yAxis: {
             title: {
@@ -68,9 +79,18 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
         fetchLevelDataByUnits();
         setChartOptions((prevOptions) => ({
             ...prevOptions,
+            yAxis: {
+                labels: {
+                    format: '{value:.0f}'
+                }
+            },
             tooltip: {
                 ...prevOptions.tooltip,
-                xDateFormat: formatOptions[datetimeFormat],
+                xDateFormat: xDateFormatOptions[dtUnits],
+                formatter: function () {
+                    return `${Highcharts.dateFormat(xDateFormatOptions[dtUnits], this.x)}<br>
+                        <span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${this.y.toFixed(0)} cm</b>`;
+                },
             },
             series: [
                 {
@@ -80,7 +100,7 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
                 },
             ],
         }));
-    }, [trashCan, trashLevelsData, datetimeFormat, lineColor, dtUnits]);
+    }, [trashCan, trashLevelsData, lineColor, dtUnits]);
 
     return (
         <div>
