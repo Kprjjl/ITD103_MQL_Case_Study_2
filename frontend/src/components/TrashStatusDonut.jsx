@@ -41,11 +41,14 @@ export function TrashStatusDonut ({ trashCans }) {
                     enabled: true,
                     crop: false,
                     distance: '-10%',
+                    format: '{point.name}: {point.percentage:.0f}%',
                     style: {
                         fontWeight: 'bold',
-                        fontSize: '16px'
+                        fontSize: '16px',
+                        textAlign: 'center',
+                        color: 'white'
                     },
-                    connectorWidth: 0
+                    connectorWidth: 0,
                 }
             }
         }
@@ -87,7 +90,7 @@ export function TrashStatusDonut ({ trashCans }) {
                     {
                         type: 'pie',
                         name: 'No. of Trash Cans',
-                        data: levelStatesArray.map(([state, count]) => [`${state} Level`, count])
+                        data: levelStatesArray.map(([state, count]) => [state, count])
                     }
                 ],
                 colors: getColors()

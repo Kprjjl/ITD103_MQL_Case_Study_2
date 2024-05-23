@@ -2,7 +2,7 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
-export function TrashLevelsChart({ trashLevelsData }) {
+export function TrashLevelsChart({ trashLevelsData, lineColor }) {
     const formatOptions = {
         "datetime": "%Y-%m-%d %H:%M:%S",
         "date": "%Y-%m-%d",
@@ -40,7 +40,7 @@ export function TrashLevelsChart({ trashLevelsData }) {
                 type: 'line',
                 name: 'Trash Level',
                 data: trashLevelsData,
-                color: "red",
+                color: lineColor,
             },
         ],
     });
@@ -62,10 +62,11 @@ export function TrashLevelsChart({ trashLevelsData }) {
                 {
                     ...prevOptions.series[0],
                     data: trashLevelsData,
+                    color: lineColor,
                 },
             ],
         }));
-    }, [trashLevelsData, datetimeFormat]);
+    }, [trashLevelsData, datetimeFormat, lineColor]);
 
     return (
         <div>
