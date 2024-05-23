@@ -8,10 +8,14 @@ import {
   Card, 
   CardHeader, 
   CardBody,
+  CardFooter,
   Tooltip,
+  Select,
+  IconButton,
 } from "@material-tailwind/react";
 
 import TrashCanIcon from './components/TrashCanIcon';
+import { PencilSquareIcon } from '@heroicons/react/16/solid';
 
 function App() {
   const [trashCans, setTrashCans] = useState([])
@@ -36,25 +40,56 @@ function App() {
     }
   }, [trashCans]);
 
-  const debugLog = () => {
-    console.log(trashCans);
-    console.log(selectedTrashCan);
-  };
+  const editTrashCanLabel = async (label) => {
+    try {
+      const response = await axios.put(`http://localhost:3001/trash/${selectedTrashCan._id}`, { label });
+      setSelectedTrashCan(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50 p-2">
-      {debugLog()}
-      <Card>
-        <CardBody>
-          <div className='w-40 h-40 m-3 relative w'>
+      <div className='my-10 p-4 grid gap-x-6 grid-cols-3' style={{ border: '1px solid red' }}>
+        <Card></Card>
+        <Card className='p-4'>
+          <CardHeader floated={false} shadow={false}>
+          </CardHeader>
+          <CardBody>
             <TrashCanIcon 
               color="white" 
               progressColor="lime" 
               progress={selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height * 100)}
             />
-          </div>
-        </CardBody>
-      </Card>
+          </CardBody>
+          <CardFooter className="border-t border-blue-gray-100 p-2 pb-0 flex justify-between">
+            <div className="flex gap-x-1">
+              <Typography variant="h5" color="blueGray">
+                {selectedTrashCan && selectedTrashCan.label}
+              </Typography>
+              <IconButton 
+                variant="text" 
+                size="sm"
+                onClick={() => {
+                  const newLabel = prompt('Enter new label');
+                  if (newLabel) {
+                    editTrashCanLabel(newLabel);
+                  }
+                }}
+              >
+                <PencilSquareIcon className="h-5 w-5 text-blue-gray-400" />
+              </IconButton>
+            </div>
+            <Typography color="blueGray" size="sm">
+              {selectedTrashCan && (
+                selectedTrashCan.current_level / selectedTrashCan.height * 100
+              ).toFixed(0)}% full
+            </Typography>
+          </CardFooter>
+        </Card>
+        <Card></Card>
+      </div>
     </div>
   )
 }

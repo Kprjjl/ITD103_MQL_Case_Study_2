@@ -23,8 +23,8 @@ router.put('/trash/:id', async (req, res) => {
     const { id } = req.params;
     const { height, label } = req.body;
     const trash = await TrashModel.findById(id);
-    trash.height = height;
-    trash.label = label;
+    if (height) trash.height = height;
+    if (label) trash.label = label;
     await trash.save();
     res.status(200).json(trash);
 });
