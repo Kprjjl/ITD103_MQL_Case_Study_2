@@ -191,7 +191,12 @@ function App() {
           <CardHeader floated={false} shadow={false}></CardHeader>
           <CardBody>
             {selectedTrashCan && (
-              <TrashLevelsChart trashLevelsData={trashLevelsData} lineColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)} />
+              <TrashLevelsChart 
+                trashCan={selectedTrashCan}
+                trashLevelsData={trashLevelsData} 
+                lineColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
+                dtUnits="minute"
+              />
             )}
           </CardBody>
           <CardFooter className="border-t border-blue-gray-100 p-2 flex justify-between min-h-20">

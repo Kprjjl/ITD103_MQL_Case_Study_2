@@ -1,14 +1,16 @@
+import axios from 'axios';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
-export function TrashLevelsChart({ trashLevelsData, lineColor }) {
+export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits }) {
     const formatOptions = {
         "datetime": "%Y-%m-%d %H:%M:%S",
         "date": "%Y-%m-%d",
         "time": "%H:%M:%S",
     };
 
+    const [data, setData] = useState([]);
     const [datetimeFormat, setDatetimeFormat] = useState("time");
     const [chartOptions, setChartOptions] = useState({
         title: {
@@ -20,7 +22,15 @@ export function TrashLevelsChart({ trashLevelsData, lineColor }) {
                 text: "Timestamp",
             },
             labels: {
-                format: `{value:${formatOptions[datetimeFormat]}}`,
+                rotation: -45,
+                step: 1,
+            },
+            dateTimeLabelFormats: {
+                hour: '%H:%M',
+                day: '%e. %b',
+                week: '%e. %b',
+                month: '%b \'%y',
+                year: '%Y'
             },
         },
         tooltip: {
@@ -46,14 +56,18 @@ export function TrashLevelsChart({ trashLevelsData, lineColor }) {
     });
 
     useEffect(() => {
+        const fetchLevelDataByUnits = async () => {
+            try {
+                const response = await axios.get(`http://localhost:3001/trash-level/${trashCan._id}/${dtUnits}`);
+                const formattedData = response.data.map(({ _id, averageFillLevel }) => [new Date(_id).getTime(), averageFillLevel]);
+                setData(formattedData);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchLevelDataByUnits();
         setChartOptions((prevOptions) => ({
             ...prevOptions,
-            xAxis: {
-                ...prevOptions.xAxis,
-                labels: {
-                    format: `{value:${formatOptions[datetimeFormat]}}`,
-                },
-            },
             tooltip: {
                 ...prevOptions.tooltip,
                 xDateFormat: formatOptions[datetimeFormat],
@@ -61,12 +75,12 @@ export function TrashLevelsChart({ trashLevelsData, lineColor }) {
             series: [
                 {
                     ...prevOptions.series[0],
-                    data: trashLevelsData,
+                    data: data,
                     color: lineColor,
                 },
             ],
         }));
-    }, [trashLevelsData, datetimeFormat, lineColor]);
+    }, [trashCan, trashLevelsData, datetimeFormat, lineColor, dtUnits]);
 
     return (
         <div>

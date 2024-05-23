@@ -61,4 +61,45 @@ router.get('/peak-usage-times', async (req, res) => {
     }
 });
 
+router.get('/trash-level/:id/:unit', async (req, res) => {
+    try {
+        const { id, unit } = req.params;
+
+        const groupBy = (unit) => {
+            const dateParts = {
+                year: { $year: '$timestamp' }
+            };
+
+            if (unit !== 'year') dateParts.month = { $month: '$timestamp' };
+            if (unit === 'day' || unit === 'hour' || unit === 'minute') dateParts.day = { $dayOfMonth: '$timestamp' };
+            if (unit === 'hour' || unit === 'minute') dateParts.hour = { $hour: '$timestamp' };
+            if (unit === 'minute') dateParts.minute = { $minute: '$timestamp' };
+
+            return [
+                { $match: { 'metadata.trash_id': id } },
+                { $sort: { timestamp: 1 } },
+                {
+                    $group: {
+                        _id: { $dateFromParts: dateParts },
+                        averageFillLevel: { $avg: '$trash_level' }
+                    }
+                },
+                { $sort: { '_id': 1 } }
+            ];
+        };
+
+        const validUnits = ['minute', 'hour', 'day', 'month', 'year'];
+        if (!validUnits.includes(unit)) {
+            return res.status(400).json({ message: 'Invalid time unit parameter' });
+        }
+
+        const trashLevels = await TrashLevelModel.aggregate(groupBy(unit));
+
+        res.json(trashLevels);
+
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
