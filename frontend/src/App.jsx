@@ -5,11 +5,11 @@ import {
   Button, 
   Typography, 
   Card, 
-  CardHeader, 
-  CardBody,
-  CardFooter,
+  CardHeader, CardBody, CardFooter,
   Tooltip,
+  Input,
   IconButton,
+  Tab, Tabs, TabsHeader, TabsBody, TabPanel,
 } from "@material-tailwind/react";
 
 import TrashCanIcon from './components/TrashCanIcon';
@@ -21,7 +21,7 @@ function App() {
   const [trashCans, setTrashCans] = useState([]);
   const [selectedTrashCan, setSelectedTrashCan] = useState(null);
   const [trashLevelsData, setTrashLevelsData] = useState([]);
-  const [trashLevelColor, setTrashLevelColor] = useState('red');
+  const [searchLabel, setSearchLabel] = useState('');
 
   function getLevelColor(value) {
     var hue = ((1 - value) * 120).toString(10);
@@ -61,7 +61,6 @@ function App() {
         setTrashCans(prevCans => prevCans.map(can => can._id === updatedTrashCan._id ? updatedTrashCan : can));
         if (selectedTrashCan && updatedTrashCan._id === selectedTrashCan._id) {
           setSelectedTrashCan(updatedTrashCan);
-          setTrashLevelColor(getLevelColor(selectedTrashCan.current_level / selectedTrashCan.height));
         }
       } else if (message.type === 'NEW_TRASH_LEVEL') {
         const newTrashLevel = message.payload;
@@ -84,7 +83,6 @@ function App() {
   useEffect(() => {
     if (selectedTrashCan) {
       fetchTrashLevelsData();
-      setTrashLevelColor(getLevelColor(selectedTrashCan.current_level / selectedTrashCan.height));
     }
   }, [selectedTrashCan]);
 
@@ -100,18 +98,61 @@ function App() {
   return (
     <div className="min-h-screen bg-blue-gray-50/50 p-2">
       <div className='my-10 p-4 grid gap-6 grid-cols-1 md:grid-cols-3' style={{ border: '1px solid red' }}>
-        <Card>
-          <CardHeader floated={false} shadow={false} >
-            <TrashStatusDonut trashCans={trashCans} />
+      <Card className="flex flex-col justify-between h-full">
+        <Tabs value="chart" className="flex flex-col h-full">
+          <CardHeader floated={false} shadow={false} className="flex-grow">
+            <TabsBody>
+              <TabPanel value="chart">
+                <TrashStatusDonut trashCans={trashCans} />
+              </TabPanel>
+              <TabPanel value="table">
+                <div className="mb-4 flex items-center gap-x-2">
+                  <Typography color="blueGray" variant="h4" className="flex-grow" style={{ flexShrink: 0 }}>Trash Cans</Typography>
+                  <Input label="Search Trash Can" onChange={(e) => setSearchLabel(e.target.value)} />
+                </div>
+                <table className="min-w-full divide-y divide-blue-gray-200">
+                  <thead className="bg-blue-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Label</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Height</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Current Level</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-blue-gray-200">
+                    {trashCans.filter(item => item.label.includes(searchLabel)).map(trashCan => (
+                      <tr key={trashCan._id} className="hover:bg-blue-gray-50 cursor-pointer" onClick={() => setSelectedTrashCan(trashCan)}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="text-sm font-medium text-blue-gray-900">{trashCan.label}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-blue-gray-900">{trashCan.height} cm</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-blue-gray-900">{(trashCan.current_level / trashCan.height * 100).toFixed(0)}%</div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TabPanel>
+            </TabsBody>
           </CardHeader>
-          <CardFooter className="border-t border-blue-gray-100 p-2 flex justify-between">
+          <CardFooter className="border-t border-blue-gray-100 p-2 mt-auto">
+            <TabsHeader>
+              <Tab value="chart">Chart</Tab>
+              <Tab value="table">Table</Tab>
+            </TabsHeader>
           </CardFooter>
-        </Card>
-        <Card>
+        </Tabs>
+      </Card>
+
+        <Card className="flex flex-col justify-between">
           <CardBody>
             <TrashCanIcon 
               color="white" 
-              progressColor={trashLevelColor}
+              progressColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
               progress={selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height * 100)}
             />
           </CardBody>
@@ -145,11 +186,12 @@ function App() {
             </div>
           </CardFooter>
         </Card>
+
         <Card>
           <CardHeader floated={false} shadow={false}></CardHeader>
           <CardBody>
             {selectedTrashCan && (
-              <TrashLevelsChart trashLevelsData={trashLevelsData} lineColor={trashLevelColor} />
+              <TrashLevelsChart trashLevelsData={trashLevelsData} lineColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)} />
             )}
           </CardBody>
           <CardFooter className="border-t border-blue-gray-100 p-2 flex justify-between">
