@@ -130,7 +130,7 @@ function App() {
                           <div className="text-sm text-blue-gray-900">{trashCan.height} cm</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-blue-gray-900">{(trashCan.current_level / trashCan.height * 100).toFixed(0)}%</div>
+                          <div className="text-sm text-blue-gray-900">{trashCan.current_level} cm</div>
                         </td>
                       </tr>
                     ))}
@@ -139,10 +139,10 @@ function App() {
               </TabPanel>
             </TabsBody>
           </CardHeader>
-          <CardFooter className="border-t border-blue-gray-100 p-2 mt-auto">
-            <TabsHeader>
-              <Tab value="chart">Chart</Tab>
-              <Tab value="table">Table</Tab>
+          <CardFooter className="border-t border-blue-gray-100 p-2 mt-auto min-h-20">
+            <TabsHeader className="min-h-16">
+              <Tab value="chart" className="min-h-14">Trash Can Chart</Tab>
+              <Tab value="table" className="min-h-14">Trash Can Data</Tab>
             </TabsHeader>
           </CardFooter>
         </Tabs>
@@ -156,7 +156,7 @@ function App() {
               progress={selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height * 100)}
             />
           </CardBody>
-          <CardFooter className="border-t border-blue-gray-100 py-3 flex justify-between">
+          <CardFooter className="border-t border-blue-gray-100 py-3 flex justify-between min-h-20">
             <div className='flex flex-col justify-center'>
               <div className="flex gap-x-1">
                 <Typography variant="h5" color="blueGray">
@@ -194,7 +194,7 @@ function App() {
               <TrashLevelsChart trashLevelsData={trashLevelsData} lineColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)} />
             )}
           </CardBody>
-          <CardFooter className="border-t border-blue-gray-100 p-2 flex justify-between">
+          <CardFooter className="border-t border-blue-gray-100 p-2 flex justify-between min-h-20">
           </CardFooter>
         </Card>
       </div>
