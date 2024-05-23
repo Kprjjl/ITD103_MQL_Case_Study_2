@@ -32,3 +32,23 @@
     animation: logo-spin infinite 20s linear;
   }
 }
+
+body {
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.bg-gray-800 {
+  background-color: #2d3748;
+}
+
+.bg-gray-700 {
+  background-color: #4a5568;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-black {
+  color: #000000;
+}

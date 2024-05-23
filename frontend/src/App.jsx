@@ -17,17 +17,15 @@ import {
 
 import TrashCanIcon from './components/TrashCanIcon';
 import TrashStatusDonut from './components/TrashStatusDonut';
+import TrashLevelsChart from './components/TrashLevelsChart';
 import { PencilSquareIcon } from '@heroicons/react/16/solid';
 
 function App() {
   const [trashCans, setTrashCans] = useState([])
   const [selectedTrashCan, setSelectedTrashCan] = useState(null)
-  const levelState_colors = {
-    "Empty": "#A9A9A9",
-    "Quarter": "#2ECC40",
-    "Half": "#FFDC00",
-    "Three-Quarter": "#FF851B",
-    "Full": "#FF4136"
+  function getLevelColor(value){
+    var hue=((1-value)*120).toString(10);
+    return ["hsl(",hue,",100%,50%)"].join("");
   }
 
   useEffect(() => {
@@ -60,13 +58,10 @@ function App() {
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50 p-2">
-      <div className='my-10 p-4 grid gap-x-6 grid-cols-3' style={{ border: '1px solid red' }}>
+      <div className='my-10 p-4 grid gap-6 grid-cols-3' style={{ border: '1px solid red' }}>
         <Card>
           <CardHeader floated={false} shadow={false}>
-            <TrashStatusDonut trashData={trashCans.map(trash => ({
-              name: trash.label,
-              y: trash.current_level,
-            }))} />
+            <TrashStatusDonut />
           </CardHeader>
         </Card>
         <Card className='p-4'>
@@ -75,38 +70,49 @@ function App() {
           <CardBody>
             <TrashCanIcon 
               color="white" 
-              progressColor={
-                selectedTrashCan && levelState_colors[selectedTrashCan.level_state]
-              }
+              progressColor={getLevelColor(selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height))}
               progress={selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height * 100)}
             />
           </CardBody>
           <CardFooter className="border-t border-blue-gray-100 p-2 pb-0 flex justify-between">
-            <div className="flex gap-x-1">
-              <Typography variant="h5" color="blueGray">
-                {selectedTrashCan && selectedTrashCan.label}
-              </Typography>
-              <IconButton 
-                variant="text" 
-                size="sm"
-                onClick={() => {
-                  const newLabel = prompt('Enter new label');
-                  if (newLabel) {
-                    editTrashCanLabel(newLabel);
-                  }
-                }}
-              >
-                <PencilSquareIcon className="h-5 w-5 text-blue-gray-400" />
-              </IconButton>
+            <div className='flex flex-col justify-center'>
+              <div className="flex gap-x-1">
+                <Typography variant="h5" color="blueGray">
+                  {selectedTrashCan && selectedTrashCan.label}
+                </Typography>
+                <IconButton 
+                  variant="text" 
+                  size="sm"
+                  onClick={() => {
+                    const newLabel = prompt('Enter new label');
+                    if (newLabel) {
+                      editTrashCanLabel(newLabel);
+                    }
+                  }}
+                >
+                  <PencilSquareIcon className="h-5 w-5 text-blue-gray-400" />
+                </IconButton>
+              </div>
             </div>
-            <Typography color="blueGray" size="sm" className="font-medium">
-              {selectedTrashCan && 
-                `${(selectedTrashCan.current_level / selectedTrashCan.height * 100).toFixed(0)}% full`
-              }
-            </Typography>
+            <div>
+              <Typography color="blueGray" size="sm" className="font-medium text-right">
+                {selectedTrashCan && `Height: ${selectedTrashCan.height} cm`}
+              </Typography>
+              <Typography color="blueGray" size="sm" className="font-medium text-right">
+                {selectedTrashCan && `${(selectedTrashCan.current_level / selectedTrashCan.height * 100).toFixed(0)}% full`}
+              </Typography>
+            </div>
           </CardFooter>
         </Card>
-        <Card></Card>
+        <Card>
+          <CardHeader floated={false} shadow={false}>
+          </CardHeader>
+          <CardBody>
+            {selectedTrashCan && (
+              <TrashLevelsChart trash={selectedTrashCan} />
+            )}
+          </CardBody>
+        </Card>
       </div>
     </div>
   )

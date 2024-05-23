@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 
-const stateOptions = ["Empty", "Quarter", "Half", "Three-Quarter", "Full"]
+const stateOptions = ["Empty", "Almost Half", "Half", "Almost Full", "Full"]
 
 const getStateName = (percentage) => {
     if (percentage >= 0 && percentage < 25) {
         return "Empty";
     } else if (percentage >= 25 && percentage < 50) {
-        return "Quarter";
+        return "Almost Half";
     } else if (percentage >= 50 && percentage < 75) {
         return "Half";
     } else if (percentage >= 75 && percentage < 100) {
-        return "Three-Quarter";
+        return "Almost Full";
     } else if (percentage >= 100) {
         return "Full";
     } else {
@@ -48,6 +48,9 @@ const TrashSchema = new mongoose.Schema({
 }, { _id: false });
 
 TrashSchema.pre("save", function(next) {
+    if (this.current_level > this.height) {
+        this.current_level = this.height;
+    }
     this.level_state = getStateName(this.current_level / this.height * 100);
     next();
 });

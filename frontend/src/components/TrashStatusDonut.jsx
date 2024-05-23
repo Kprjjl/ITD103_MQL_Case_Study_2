@@ -21,7 +21,7 @@ export function TrashStatusDonut () {
         },
         subtitle: {
             useHTML: true,
-            text: `<span style="font-size: 24px">Trash Cans</span>`,
+            text: `<span style="font-size: 24px">Trash Can/s</span>`,
             floating: true,
             verticalAlign: 'middle',
             y: 30

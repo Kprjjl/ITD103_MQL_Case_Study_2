@@ -42,6 +42,13 @@ router.get('/trash-level', async (req, res) => {
     res.json(trashLevel);
 });
 
+router.get('/trash-level/:id', async (req, res) => {
+    const { id } = req.params;
+    const trashLevel = await TrashLevelModel.find({ 'metadata.trash_id': id });
+    const data = trashLevel.map(({ timestamp, trash_level }) => ([ timestamp, trash_level ]));
+    res.json(data);
+});
+
 router.post('/trash-level', async (req, res) => {
     try{
         const { trash_id, trash_level } = req.body;
