@@ -6,12 +6,13 @@ import {
   Typography, 
   Card, 
   CardHeader, CardBody, CardFooter,
-  Tooltip,
+  Navbar,
   Input,
   IconButton,
   Tab, Tabs, TabsHeader, TabsBody, TabPanel,
 } from "@material-tailwind/react";
 
+import WebSocketIcon from './components/websocketIcon';
 import TrashCanIcon from './components/TrashCanIcon';
 import TrashStatusDonut from './components/TrashStatusDonut';
 import TrashLevelsChart from './components/TrashLevelsChart';
@@ -23,6 +24,7 @@ function App() {
   const [trashLevelsData, setTrashLevelsData] = useState([]);
   const [searchLabel, setSearchLabel] = useState('');
   const [dtUnits, setDtUnits] = useState('minute');
+  const [wsConnected, setWsConnected] = useState(false);
 
   function getLevelColor(value) {
     var hue = ((1 - value) * 120).toString(10);
@@ -71,10 +73,10 @@ function App() {
       }
     };
     ws.onopen = () => {
-      console.log('WebSocket connection established');
+      setWsConnected(true);
     };
     ws.onclose = () => {
-      console.log('WebSocket connection closed');
+      setWsConnected(false);
     };
     return () => {
       ws.close();
@@ -97,8 +99,15 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-gray-50/50 p-2">
-      <div className='my-10 p-4 grid gap-6 grid-cols-1 md:grid-cols-3' >
+    <div className="min-h-screen bg-blue-gray-50/50">
+      <Navbar fullWidth className="min-h-16 flex justify-between sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4">
+        <div></div>
+        <Typography variant="h4" color="black" >Trash Monitoring System</Typography> {/* style={{ border: '1px solid red' }} */}
+        <div>
+          <WebSocketIcon connection={wsConnected} width={24} height={24} />
+        </div>
+      </Navbar>
+      <div className='p-4 grid gap-6 grid-cols-1 md:grid-cols-3' >
         <Card className="flex flex-col justify-between h-full">
           <Tabs value="chart" className="flex flex-col h-full">
             <CardHeader floated={false} shadow={false} className="flex-grow">
