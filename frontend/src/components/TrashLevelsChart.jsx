@@ -12,7 +12,6 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
         month: '%b \'%y',
         year: '%Y',
     };
-    const [data, setData] = useState([]);
     const [chartOptions, setChartOptions] = useState({
         title: {
             text: "",
@@ -67,39 +66,41 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
     });
 
     useEffect(() => {
+        console.log("dtUnits", dtUnits)
+        let formattedData = [];
         const fetchLevelDataByUnits = async () => {
             try {
                 const response = await axios.get(`http://localhost:3001/trash-level/${trashCan._id}/${dtUnits}`);
-                const formattedData = response.data.map(({ _id, averageFillLevel }) => [new Date(_id).getTime(), averageFillLevel]);
-                setData(formattedData);
+                formattedData = response.data.map(({ _id, averageFillLevel }) => [new Date(_id).getTime(), averageFillLevel]);
             } catch (error) {
                 console.error(error);
             }
         };
-        fetchLevelDataByUnits();
-        setChartOptions((prevOptions) => ({
-            ...prevOptions,
-            yAxis: {
-                labels: {
-                    format: '{value:.0f}'
-                }
-            },
-            tooltip: {
-                ...prevOptions.tooltip,
-                xDateFormat: xDateFormatOptions[dtUnits],
-                formatter: function () {
-                    return `${Highcharts.dateFormat(xDateFormatOptions[dtUnits], this.x)}<br>
-                        <span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${this.y.toFixed(0)} cm</b>`;
+        fetchLevelDataByUnits().then(() => {
+            setChartOptions((prevOptions) => ({
+                ...prevOptions,
+                yAxis: {
+                    labels: {
+                        format: '{value:.0f}'
+                    }
                 },
-            },
-            series: [
-                {
-                    ...prevOptions.series[0],
-                    data: data,
-                    color: lineColor,
+                tooltip: {
+                    ...prevOptions.tooltip,
+                    xDateFormat: xDateFormatOptions[dtUnits],
+                    formatter: function () {
+                        return `${Highcharts.dateFormat(xDateFormatOptions[dtUnits], this.x)}<br>
+                            <span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${this.y.toFixed(0)} cm</b>`;
+                    },
                 },
-            ],
-        }));
+                series: [
+                    {
+                        ...prevOptions.series[0],
+                        data: formattedData,
+                        color: lineColor,
+                    },
+                ],
+            }));
+        });
     }, [trashCan, trashLevelsData, lineColor, dtUnits]);
 
     return (
