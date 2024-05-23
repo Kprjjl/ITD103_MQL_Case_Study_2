@@ -8,7 +8,7 @@ router.get('/level-states', async (req, res) => {
         const levelStates = await TrashModel.aggregate([
             { $group: { _id: '$level_state', count: { $sum: 1 } } }
         ]);
-        const levelStatesArray = levelStates.map(levelState => [levelState._id, levelState.count]);
+        const levelStatesArray = levelStates.map(levelState => [`${levelState._id}`, levelState.count]);
         const totalCount = levelStates.reduce((acc, levelState) => acc + levelState.count, 0);
 
         res.json({ levelStates: levelStatesArray, totalCount });

@@ -4,16 +4,15 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export function TrashStatusDonut () {
+    const colors = {
+        "Empty": "#A9A9A9",
+        "Quarter": "#2ECC40",
+        "Half": "#FFDC00",
+        "Three-Quarter": "#FF851B",
+        "Full": "#FF4136"
+    }
     const [trashStateData, setTrashStateData] = useState([]);
     const [totalTrashCans, setTotalTrashCans] = useState(0);
-    
-    const getTitle = () => {
-        return `
-            <span style="font-size: 60px">
-                <b>${totalTrashCans}</b>
-            </span>
-        `;
-    };
     const [chartOptions, setChartOptions] = useState({
         title: {
             text: "",
@@ -31,7 +30,7 @@ export function TrashStatusDonut () {
             enabled: false
         },
         tooltip: {
-            valueDecimals: 0
+            valueDecimals: 0,
         },
         plotOptions: {
             series: {
@@ -69,6 +68,16 @@ export function TrashStatusDonut () {
     }, []);
 
     useEffect(() => {
+        const getTitle = () => {
+            return `
+                <span style="font-size: 60px">
+                    <b>${totalTrashCans}</b>
+                </span>
+            `;
+        };
+        const getColors = () => {
+            return trashStateData.map(([state, count]) => colors[state]);
+        };
         if (trashStateData.length > 0) {
             setChartOptions({
                 ...chartOptions,
@@ -84,9 +93,10 @@ export function TrashStatusDonut () {
                     {
                         type: 'pie',
                         name: 'No. of Trash Cans',
-                        data: trashStateData.map(([state, count]) => [state, count])
+                        data: trashStateData.map(([state, count]) => [`${state} Level`, count])
                     }
-                ]
+                ],
+                colors: getColors()
             });
         }
     }, [trashStateData, totalTrashCans]);

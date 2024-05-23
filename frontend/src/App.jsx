@@ -22,6 +22,13 @@ import { PencilSquareIcon } from '@heroicons/react/16/solid';
 function App() {
   const [trashCans, setTrashCans] = useState([])
   const [selectedTrashCan, setSelectedTrashCan] = useState(null)
+  const levelState_colors = {
+    "Empty": "#A9A9A9",
+    "Quarter": "#2ECC40",
+    "Half": "#FFDC00",
+    "Three-Quarter": "#FF851B",
+    "Full": "#FF4136"
+  }
 
   useEffect(() => {
     const fetchTrashCans = async () => {
@@ -68,7 +75,9 @@ function App() {
           <CardBody>
             <TrashCanIcon 
               color="white" 
-              progressColor="lime" 
+              progressColor={
+                selectedTrashCan && levelState_colors[selectedTrashCan.level_state]
+              }
               progress={selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height * 100)}
             />
           </CardBody>

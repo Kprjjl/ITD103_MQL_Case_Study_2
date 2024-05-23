@@ -1,6 +1,22 @@
 const mongoose = require("mongoose");
 
-const stateOptions = ["full", "empty", "half", "quarter", "three-quarter"]
+const stateOptions = ["Empty", "Quarter", "Half", "Three-Quarter", "Full"]
+
+const getStateName = (percentage) => {
+    if (percentage >= 0 && percentage < 25) {
+        return "Empty";
+    } else if (percentage >= 25 && percentage < 50) {
+        return "Quarter";
+    } else if (percentage >= 50 && percentage < 75) {
+        return "Half";
+    } else if (percentage >= 75 && percentage < 100) {
+        return "Three-Quarter";
+    } else if (percentage >= 100) {
+        return "Full";
+    } else {
+        return "Invalid percentage";
+    }
+};
 
 const TrashSchema = new mongoose.Schema({
     _id: {
@@ -23,7 +39,7 @@ const TrashSchema = new mongoose.Schema({
     level_state: {
         type: String,
         enum: stateOptions,
-        default: "empty"
+        default: "Empty"
     },
     created_at: {
         type: Date,
@@ -32,17 +48,7 @@ const TrashSchema = new mongoose.Schema({
 }, { _id: false });
 
 TrashSchema.pre("save", function(next) {
-    if (this.current_level === 0) {
-        this.level_state = "empty";
-    } else if (this.current_level === this.height) {
-        this.level_state = "full";
-    } else if (this.current_level >= this.height / 4) {
-        this.level_state = "quarter";
-    } else if (this.current_level >= this.height / 2) {
-        this.level_state = "half";
-    } else if (this.current_level >= 3 * this.height / 4) {
-        this.level_state = "three-quarter";
-    }
+    this.level_state = getStateName(this.current_level / this.height * 100);
     next();
 });
 
