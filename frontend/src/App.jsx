@@ -4,8 +4,7 @@ import './App.css';
 import { 
   Button, ButtonGroup,
   Typography, 
-  Card, 
-  CardHeader, CardBody, CardFooter,
+  Card, CardHeader, CardBody, CardFooter,
   Navbar,
   Input,
   IconButton,
@@ -98,6 +97,15 @@ function App() {
     }
   };
 
+  const editTrashCanHeight = async (height) => {
+    try {
+      const response = await axios.put(`http://localhost:3001/trash/${selectedTrashCan._id}`, { height });
+      setSelectedTrashCan(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
       <Navbar fullWidth className="min-h-16 flex justify-between sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4">
@@ -168,7 +176,7 @@ function App() {
           </CardBody>
           <CardFooter className="border-t border-blue-gray-100 py-3 flex justify-between min-h-20">
             <div className='flex flex-col justify-center'>
-              <div className="flex gap-x-1">
+              <div className="flex gap-x-1 items-center">
                 <Typography variant="h5" color="blueGray">
                   {selectedTrashCan && selectedTrashCan.label}
                 </Typography>
@@ -187,9 +195,23 @@ function App() {
               </div>
             </div>
             <div>
-              <Typography color="blueGray" size="sm" className="font-medium text-right">
-                {selectedTrashCan && `Height: ${selectedTrashCan.height} cm`}
-              </Typography>
+              <div className="flex items-center" >
+                <IconButton
+                  variant="text" 
+                  size="sm"
+                  onClick={() => {
+                    const newHeight = prompt('Enter new height (cm)');
+                    if (newHeight) {
+                      editTrashCanHeight(newHeight);
+                    }
+                  }}
+                >
+                  <PencilSquareIcon className="h-4 w-4 text-blue-gray-400" />
+                </IconButton>
+                <Typography color="blueGray" size="sm" className="font-medium text-right">
+                  {selectedTrashCan && `Height: ${selectedTrashCan.height} cm`}
+                </Typography>
+              </div>
               <Typography color="blueGray" size="sm" className="font-medium text-right">
                 {selectedTrashCan && `${(selectedTrashCan.current_level / selectedTrashCan.height * 100).toFixed(0)}% full`}
               </Typography>
