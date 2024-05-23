@@ -4,6 +4,7 @@ const router = express.Router();
 const TrashLevelModel = require('../models/TrashLevel');
 const TrashModel = require('../models/Trash');
 const { postTrashMiddleware } = require('../middleware/trash-middleware');
+const { broadcast } = require('../websocket');
 
 // ------------------- Trash CRUD -------------------
 router.get('/trash', async (req, res) => {
@@ -12,11 +13,12 @@ router.get('/trash', async (req, res) => {
 });
 
 router.post('/trash', postTrashMiddleware, async (req, res) => {
-    console.log("posting")
+    console.log("posting");
     const { device_id } = req.body;
     const trash = new TrashModel({ _id: device_id });
     await trash.save();
     res.json(trash);
+    broadcast({ type: 'NEW_TRASH_CAN', payload: trash });
 });
 
 router.put('/trash/:id', async (req, res) => {
@@ -27,16 +29,17 @@ router.put('/trash/:id', async (req, res) => {
     if (label) trash.label = label;
     await trash.save();
     res.status(200).json(trash);
+    broadcast({ type: 'UPDATE_TRASH_CAN', payload: trash });
 });
 
 router.delete('/trash/:id', async (req, res) => {
     const { id } = req.params;
     await TrashModel.findByIdAndDelete(id);
     res.json({ message: 'Trash deleted' });
+    broadcast({ type: 'DELETE_TRASH_CAN', payload: { id } });
 });
 
 // ------------------- Trash Level -------------------
-
 router.get('/trash-level', async (req, res) => {
     const trashLevel = await TrashLevelModel.find();
     res.json(trashLevel);
@@ -50,7 +53,7 @@ router.get('/trash-level/:id', async (req, res) => {
 });
 
 router.post('/trash-level', async (req, res) => {
-    try{
+    try {
         const { trash_id, trash_level } = req.body;
         const trash = await TrashModel.findById(trash_id);
         if (!trash) {
@@ -62,8 +65,10 @@ router.post('/trash-level', async (req, res) => {
         await trashLevel.save();
         await trash.save();
         res.json(trashLevel);
-    } catch(err) {
-        console.log("Error posting trash level:", err.message)
+        broadcast({ type: 'NEW_TRASH_LEVEL', payload: trashLevel });
+        broadcast({ type: 'UPDATE_TRASH_CAN', payload: trash });
+    } catch (err) {
+        console.log("Error posting trash level:", err.message);
         res.status(500).json({ message: err.message });
     }
 });

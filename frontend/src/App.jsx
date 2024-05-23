@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-import './App.css'
-
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import './App.css';
 import { 
   Button, 
   Typography, 
@@ -10,8 +9,6 @@ import {
   CardBody,
   CardFooter,
   Tooltip,
-  Select,
-  Option,
   IconButton,
 } from "@material-tailwind/react";
 
@@ -21,31 +18,72 @@ import TrashLevelsChart from './components/TrashLevelsChart';
 import { PencilSquareIcon } from '@heroicons/react/16/solid';
 
 function App() {
-  const [trashCans, setTrashCans] = useState([])
-  const [selectedTrashCan, setSelectedTrashCan] = useState(null)
-  function getLevelColor(value){
-    var hue=((1-value)*120).toString(10);
-    return ["hsl(",hue,",100%,50%)"].join("");
+  const [trashCans, setTrashCans] = useState([]);
+  const [selectedTrashCan, setSelectedTrashCan] = useState(null);
+  const [trashLevelsData, setTrashLevelsData] = useState([]);
+
+  function getLevelColor(value) {
+    var hue = ((1 - value) * 120).toString(10);
+    return ["hsl(", hue, ",100%,50%)"].join("");
   }
+  
+  const fetchTrashLevelsData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/trash-level/${selectedTrashCan._id}`);
+      const formattedData = response.data.map(([timestamp, level]) => [new Date(timestamp).getTime(), level]);
+      setTrashLevelsData(formattedData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const fetchTrashCans = async () => {
       try {
         const response = await axios.get('http://localhost:3001/trash');
         setTrashCans(response.data);
+        setSelectedTrashCan(response.data[0]);
       } catch (error) {
         console.error(error);
       }
     };
-
     fetchTrashCans();
   }, []);
 
   useEffect(() => {
-    if (selectedTrashCan === null && trashCans.length > 0) {
-      setSelectedTrashCan(trashCans[0]);
+    const ws = new WebSocket('ws://localhost:3001');
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'UPDATE_TRASH_CAN') {
+        const updatedTrashCan = message.payload;
+        setTrashCans(prevCans => prevCans.map(can => can._id === updatedTrashCan._id ? updatedTrashCan : can));
+        if (selectedTrashCan && updatedTrashCan._id === selectedTrashCan._id) {
+          setSelectedTrashCan(updatedTrashCan);
+        }
+      } else if (message.type === 'NEW_TRASH_LEVEL') {
+        const newTrashLevel = message.payload;
+        if (selectedTrashCan && newTrashLevel.metadata.trash_id === selectedTrashCan._id) {
+          setTrashLevelsData(prevData => [...prevData, [new Date(newTrashLevel.timestamp).getTime(), newTrashLevel.trash_level]]);
+        }
+      }
+    };
+    ws.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+    ws.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+    return () => {
+      ws.close();
+    };
+  }, [selectedTrashCan]);
+
+  useEffect(() => {
+    if (selectedTrashCan) {
+      fetchTrashLevelsData();
     }
-  }, [trashCans]);
+  }, [selectedTrashCan]);
 
   const editTrashCanLabel = async (label) => {
     try {
@@ -61,12 +99,11 @@ function App() {
       <div className='my-10 p-4 grid gap-6 grid-cols-3' style={{ border: '1px solid red' }}>
         <Card>
           <CardHeader floated={false} shadow={false}>
-            <TrashStatusDonut />
+            <TrashStatusDonut trashCans={trashCans} />
           </CardHeader>
         </Card>
         <Card className='p-4'>
-          <CardHeader floated={false} shadow={false}>
-          </CardHeader>
+          <CardHeader floated={false} shadow={false}></CardHeader>
           <CardBody>
             <TrashCanIcon 
               color="white" 
@@ -105,17 +142,16 @@ function App() {
           </CardFooter>
         </Card>
         <Card>
-          <CardHeader floated={false} shadow={false}>
-          </CardHeader>
+          <CardHeader floated={false} shadow={false}></CardHeader>
           <CardBody>
             {selectedTrashCan && (
-              <TrashLevelsChart trash={selectedTrashCan} />
+              <TrashLevelsChart trashLevelsData={trashLevelsData} />
             )}
           </CardBody>
         </Card>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,6 +1,30 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const TrashCanIcon = ({ color, progressColor, progress, className }) => {
+  const stop1Ref = useRef(null);
+  const stop2Ref = useRef(null);
+
+  useEffect(() => {
+    const stop1 = stop1Ref.current;
+    const stop2 = stop2Ref.current;
+
+    if (stop1 && stop2) {
+      // Update the stop offsets and colors
+      stop1.setAttribute('offset', `0.${progress}`);
+      stop1.setAttribute('stop-color', progressColor);
+
+      stop2.setAttribute('offset', `0.${progress}`);
+      stop2.setAttribute('stop-color', color);
+
+      // Restart animations
+      const animate1 = stop1.querySelector('animate');
+      const animate2 = stop2.querySelector('animate');
+
+      if (animate1) animate1.beginElement();
+      if (animate2) animate2.beginElement();
+    }
+  }, [color, progressColor, progress]);
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -9,13 +33,11 @@ const TrashCanIcon = ({ color, progressColor, progress, className }) => {
     > 
       <defs>
         <linearGradient id="lg" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset={`0.${progress}`} stop-color={progressColor}>
-            <animate attributeName="offset" dur="1s" values={`0;0.${progress-5}`} fill="freeze"
-              repeatCount="1" />
+          <stop offset={`0.${progress}`} stopColor={progressColor} ref={stop1Ref}>
+            <animate attributeName="offset" dur="1s" values={`0;0.${progress - 5}`} fill="freeze" />
           </stop>
-          <stop offset={`0.${progress}`} stop-color={color}>
-            <animate attributeName="offset" dur="1s" values={`0;0.${progress}`} fill="freeze"
-              repeatCount="1" />
+          <stop offset={`0.${progress}`} stopColor={color} ref={stop2Ref}>
+            <animate attributeName="offset" dur="1s" values={`0;0.${progress}`} fill="freeze" />
           </stop>
         </linearGradient>
       </defs>

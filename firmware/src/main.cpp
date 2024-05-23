@@ -21,6 +21,8 @@ void postSensorData(long distance);
 
 void setup() {
   Serial.begin(9600);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
 
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -31,11 +33,13 @@ void setup() {
 
   connectDevice();
   Serial.println("Setup complete");
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void loop() {
   unsigned long currentTime = millis();
   long distance = WasteLevel.read();
+  Serial.println("Level: " + String(100 - distance) + " cm");
 
   // Check for significant change
   if (lastDistance == -1 || abs(distance - lastDistance) > significantChangeThreshold) {
@@ -97,6 +101,7 @@ void connectDevice() {
 }
 
 void postSensorData(long distance) {
+  digitalWrite(LED_BUILTIN, LOW);
   WiFiClient client;
   HTTPClient http;
 
@@ -116,4 +121,5 @@ void postSensorData(long distance) {
   }
 
   http.end();
+  digitalWrite(LED_BUILTIN, HIGH);
 }

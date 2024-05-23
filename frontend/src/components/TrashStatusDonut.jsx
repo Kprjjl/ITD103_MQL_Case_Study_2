@@ -1,18 +1,16 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 
-export function TrashStatusDonut () {
+export function TrashStatusDonut ({ trashCans }) {
     const colors = {
         "Empty": "#A9A9A9",
-        "Quarter": "#2ECC40",
+        "Almost Half": "#2ECC40",
         "Half": "#FFDC00",
-        "Three-Quarter": "#FF851B",
+        "Almost Full": "#FF851B",
         "Full": "#FF4136"
-    }
-    const [trashStateData, setTrashStateData] = useState([]);
-    const [totalTrashCans, setTotalTrashCans] = useState(0);
+    };
+
     const [chartOptions, setChartOptions] = useState({
         title: {
             text: "",
@@ -54,31 +52,27 @@ export function TrashStatusDonut () {
     });
 
     useEffect(() => {
-        const fetchTrashStateData = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/level-states');
-                setTrashStateData(response.data.levelStates);
-                setTotalTrashCans(response.data.totalCount);
-            } catch (error) {
-                console.error(error);
-            }
-        };
+        if (trashCans.length > 0) {
+            const levelStates = trashCans.reduce((acc, trashCan) => {
+                const state = trashCan.level_state || "Empty";
+                acc[state] = (acc[state] || 0) + 1;
+                return acc;
+            }, {});
+            
+            const levelStatesArray = Object.entries(levelStates).map(([state, count]) => [state, count]);
+            const totalCount = trashCans.length;
 
-        fetchTrashStateData();
-    }, []);
+            const getTitle = () => {
+                return `
+                    <span style="font-size: 60px">
+                        <b>${totalCount}</b>
+                    </span>
+                `;
+            };
+            const getColors = () => {
+                return levelStatesArray.map(([state]) => colors[state]);
+            };
 
-    useEffect(() => {
-        const getTitle = () => {
-            return `
-                <span style="font-size: 60px">
-                    <b>${totalTrashCans}</b>
-                </span>
-            `;
-        };
-        const getColors = () => {
-            return trashStateData.map(([state, count]) => colors[state]);
-        };
-        if (trashStateData.length > 0) {
             setChartOptions({
                 ...chartOptions,
                 title: {
@@ -93,13 +87,13 @@ export function TrashStatusDonut () {
                     {
                         type: 'pie',
                         name: 'No. of Trash Cans',
-                        data: trashStateData.map(([state, count]) => [`${state} Level`, count])
+                        data: levelStatesArray.map(([state, count]) => [`${state} Level`, count])
                     }
                 ],
                 colors: getColors()
             });
         }
-    }, [trashStateData, totalTrashCans]);
+    }, [trashCans]);
 
     return (
         <div>
@@ -108,7 +102,7 @@ export function TrashStatusDonut () {
                 options={chartOptions}
             />
         </div>
-    )
+    );
 }
 
 export default TrashStatusDonut;

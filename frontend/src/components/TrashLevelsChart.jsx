@@ -1,16 +1,15 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 
-export function TrashLevelsChart ({ trash }) {
+export function TrashLevelsChart({ trashLevelsData }) {
     const formatOptions = {
         "datetime": "%Y-%m-%d %H:%M:%S",
         "date": "%Y-%m-%d",
         "time": "%H:%M:%S",
-    }
-    const [datetimeFormat, setDatetimeFormat] = useState("time")
-    const [trashLevelsData, setTrashLevelsData] = useState([]);
+    };
+
+    const [datetimeFormat, setDatetimeFormat] = useState("time");
     const [chartOptions, setChartOptions] = useState({
         title: {
             text: "",
@@ -34,40 +33,39 @@ export function TrashLevelsChart ({ trash }) {
             },
         },
         plotOptions: {
-            series: {
-            }
+            series: {},
         },
-        series: [],
+        series: [
+            {
+                type: 'line',
+                name: 'Trash Level',
+                data: trashLevelsData,
+                color: "red",
+            },
+        ],
     });
 
     useEffect(() => {
-        const fetchTrashLevelsData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:3001/trash-level/${trash._id}`);
-                const formattedData = response.data.map(([timestamp, level]) => [new Date(timestamp).getTime(), level]);
-                setTrashLevelsData(formattedData);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchTrashLevelsData();
-    }, [trash]);
-
-    useEffect(() => {
-        if (trashLevelsData && trashLevelsData.length > 0) {
-            setChartOptions({
-                ...chartOptions,
-                series: [
-                    {
-                        type: 'line',
-                        name: 'Trash Level',
-                        data: trashLevelsData,
-                        color: "red"
-                    }
-                ],
-            });
-        }
-    }, [trashLevelsData]);
+        setChartOptions((prevOptions) => ({
+            ...prevOptions,
+            xAxis: {
+                ...prevOptions.xAxis,
+                labels: {
+                    format: `{value:${formatOptions[datetimeFormat]}}`,
+                },
+            },
+            tooltip: {
+                ...prevOptions.tooltip,
+                xDateFormat: formatOptions[datetimeFormat],
+            },
+            series: [
+                {
+                    ...prevOptions.series[0],
+                    data: trashLevelsData,
+                },
+            ],
+        }));
+    }, [trashLevelsData, datetimeFormat]);
 
     return (
         <div>
@@ -76,7 +74,7 @@ export function TrashLevelsChart ({ trash }) {
                 options={chartOptions}
             />
         </div>
-    )
+    );
 }
 
 export default TrashLevelsChart;
