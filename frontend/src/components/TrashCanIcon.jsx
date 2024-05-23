@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const TrashCanIcon = ({ color, progressColor, progress, className }) => {
+  const [previousProgress, setPreviousProgress] = useState(progress);
   const stop1Ref = useRef(null);
   const stop2Ref = useRef(null);
 
@@ -20,9 +21,15 @@ const TrashCanIcon = ({ color, progressColor, progress, className }) => {
       const animate1 = stop1.querySelector('animate');
       const animate2 = stop2.querySelector('animate');
 
-      if (animate1) animate1.beginElement();
-      if (animate2) animate2.beginElement();
+      if (animate1 && animate2) {
+        animate1.setAttribute('values', `0.${previousProgress - 5};0.${progress - 5}`);
+        animate1.beginElement();
+
+        animate2.setAttribute('values', `0.${previousProgress};0.${progress}`);
+        animate2.beginElement();
+      }
     }
+    setPreviousProgress(progress);
   }, [color, progressColor, progress]);
 
   return (
