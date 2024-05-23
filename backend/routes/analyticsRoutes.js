@@ -1,6 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const TrashLevelModel = require('../models/TrashLevel');
+const TrashModel = require('../models/Trash');
+
+router.get('/level-states', async (req, res) => {
+    try {
+        const levelStates = await TrashModel.aggregate([
+            { $group: { _id: '$level_state', count: { $sum: 1 } } }
+        ]);
+        const levelStatesArray = levelStates.map(levelState => [levelState._id, levelState.count]);
+        const totalCount = levelStates.reduce((acc, levelState) => acc + levelState.count, 0);
+
+        res.json({ levelStates: levelStatesArray, totalCount });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 router.get('/average-fill-time', async (req, res) => {
     try {

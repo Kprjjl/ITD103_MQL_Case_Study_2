@@ -11,10 +11,12 @@ import {
   CardFooter,
   Tooltip,
   Select,
+  Option,
   IconButton,
 } from "@material-tailwind/react";
 
 import TrashCanIcon from './components/TrashCanIcon';
+import TrashStatusDonut from './components/TrashStatusDonut';
 import { PencilSquareIcon } from '@heroicons/react/16/solid';
 
 function App() {
@@ -52,7 +54,14 @@ function App() {
   return (
     <div className="min-h-screen bg-blue-gray-50/50 p-2">
       <div className='my-10 p-4 grid gap-x-6 grid-cols-3' style={{ border: '1px solid red' }}>
-        <Card></Card>
+        <Card>
+          <CardHeader floated={false} shadow={false}>
+            <TrashStatusDonut trashData={trashCans.map(trash => ({
+              name: trash.label,
+              y: trash.current_level,
+            }))} />
+          </CardHeader>
+        </Card>
         <Card className='p-4'>
           <CardHeader floated={false} shadow={false}>
           </CardHeader>
@@ -81,10 +90,10 @@ function App() {
                 <PencilSquareIcon className="h-5 w-5 text-blue-gray-400" />
               </IconButton>
             </div>
-            <Typography color="blueGray" size="sm">
-              {selectedTrashCan && (
-                selectedTrashCan.current_level / selectedTrashCan.height * 100
-              ).toFixed(0)}% full
+            <Typography color="blueGray" size="sm" className="font-medium">
+              {selectedTrashCan && 
+                `${(selectedTrashCan.current_level / selectedTrashCan.height * 100).toFixed(0)}% full`
+              }
             </Typography>
           </CardFooter>
         </Card>
