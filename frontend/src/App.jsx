@@ -116,14 +116,16 @@ function App() {
         </div>
       </Navbar>
       <div className='p-4 grid gap-6 grid-cols-1 md:grid-cols-3' >
-        <Card className="flex flex-col justify-between h-full">
-          <Tabs value="chart" className="flex flex-col h-full">
-            <CardHeader floated={false} shadow={false} className="flex-grow">
-              <TabsBody>
-                <TabPanel value="chart">
+        <Card className="flex flex-col h-full">
+          <Tabs value="chart" className="flex flex-col justify-between h-full">
+            <TabsBody className="h-full">
+              <TabPanel value="chart">
+                <CardHeader floated={false} shadow={false} >
                   <TrashStatusDonut trashCans={trashCans} />
-                </TabPanel>
-                <TabPanel value="table">
+                </CardHeader>
+              </TabPanel>
+              <TabPanel value="table">
+                <CardHeader floated={false} shadow={false} >
                   <div className="mb-4 flex items-center gap-x-2">
                     <Typography color="blueGray" variant="h4" className="flex-grow" style={{ flexShrink: 0 }}>Trash Cans</Typography>
                     <Input label="Search Trash Can" onChange={(e) => setSearchLabel(e.target.value)} />
@@ -154,10 +156,10 @@ function App() {
                       ))}
                     </tbody>
                   </table>
-                </TabPanel>
-              </TabsBody>
-            </CardHeader>
-            <CardFooter className="border-t border-blue-gray-100 p-2 mt-auto min-h-20">
+                </CardHeader>
+              </TabPanel>
+            </TabsBody>
+            <CardFooter className="border-t border-blue-gray-100 p-2 min-h-20">
               <TabsHeader className="min-h-16">
                 <Tab value="chart" className="min-h-14">Trash Can Chart</Tab>
                 <Tab value="table" className="min-h-14">Trash Can Data</Tab>
@@ -220,7 +222,7 @@ function App() {
         </Card>
 
         <Card className="flex flex-col justify-between">
-          <CardBody>
+          <CardBody className="m-auto">
             {selectedTrashCan && (
               <TrashLevelsChart 
                 trashCan={selectedTrashCan}
@@ -231,7 +233,7 @@ function App() {
             )}
           </CardBody>
           <CardFooter className="border-t border-blue-gray-100 p-2 flex justify-between min-h-20">
-            <ButtonGroup size="md" color="white" variant="gradient" className='flex justify-center'>
+            <ButtonGroup size="md" color="white" variant="gradient" className='flex justify-center' fullWidth>
               <Button onClick={() => setDtUnits('minute')} >Min</Button>
               <Button onClick={() => setDtUnits('hour')} >Hr</Button>
               <Button onClick={() => setDtUnits('day')} >D</Button>

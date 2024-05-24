@@ -17,6 +17,9 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
             text: "",
         },
         yAxis: {
+            title: {
+                text: "Trash Level (cm)",
+            },
             labels: {
                 format: '{value:.0f}'
             }
@@ -47,11 +50,6 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
                     <span style="color:${this.color}">\u25CF</span> ${this.series.name}: <b>${this.y.toFixed(0)} cm</b>`;
             },
         },
-        yAxis: {
-            title: {
-                text: "Trash Level (cm)",
-            },
-        },
         plotOptions: {
             series: {},
         },
@@ -80,6 +78,9 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
             setChartOptions((prevOptions) => ({
                 ...prevOptions,
                 yAxis: {
+                    title: {
+                        text: "Trash Level (cm)",
+                    },
                     labels: {
                         format: '{value:.0f}'
                     }
