@@ -2,8 +2,10 @@ import axios from 'axios';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
+import darkTheme from '../highcharts-theme';
 
-export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits }) {
+export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits, darkMode=false }) {
+
     const xDateFormatOptions = {
         minute: "%e %b %Y %H:%M:%S",
         hour: "%e %b %Y %H:%M:%S",
@@ -102,7 +104,14 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
                 ],
             }));
         });
-    }, [trashCan, trashLevelsData, lineColor, dtUnits]);
+
+        
+        if (darkMode) {
+            Highcharts.setOptions(darkTheme);
+        } else {
+            Highcharts.setOptions(Highcharts.getOptions()); // Reset to default
+        }
+    }, [trashCan, trashLevelsData, lineColor, dtUnits, darkMode]);
 
     return (
         <div>
