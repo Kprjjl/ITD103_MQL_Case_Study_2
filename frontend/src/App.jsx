@@ -222,7 +222,7 @@ function App() {
         </Card>
 
         <Card className="flex flex-col justify-between">
-          <CardBody className="m-auto">
+          <CardBody className="m-auto w-full">
             {selectedTrashCan && (
               <TrashLevelsChart 
                 trashCan={selectedTrashCan}
