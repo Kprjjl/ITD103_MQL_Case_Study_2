@@ -15,6 +15,9 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
         year: '%Y',
     };
     const [chartOptions, setChartOptions] = useState({
+        chart: {
+            backgroundColor: darkMode ? "transparent" : "white",
+        },
         title: {
             text: "",
         },
@@ -79,6 +82,9 @@ export function TrashLevelsChart({ trashCan, trashLevelsData, lineColor, dtUnits
         fetchLevelDataByUnits().then(() => {
             setChartOptions((prevOptions) => ({
                 ...prevOptions,
+                chart: {
+                    backgroundColor: darkMode ? "transparent" : "white",
+                },
                 yAxis: {
                     title: {
                         text: "Trash Level (cm)",

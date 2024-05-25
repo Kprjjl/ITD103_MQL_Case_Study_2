@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const WebSocketIcon = ({ connection, width, height }) => {
+const WebSocketIcon = ({ connection, width, height, darkMode }) => {
     const [fillColor, setFillColor] = useState('#FF0000');
     const fillColors = {
         true: '#006400',
@@ -8,8 +8,9 @@ const WebSocketIcon = ({ connection, width, height }) => {
     };
 
     useEffect(() => {
-        setFillColor(fillColors[connection]);
-    }, [connection])
+        const color = darkMode && connection ? "lime" : fillColors[connection]
+        setFillColor(color);
+    }, [connection, darkMode])
     return (
         <svg width={width} height={height} viewBox="0 -80 300 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
             <g>

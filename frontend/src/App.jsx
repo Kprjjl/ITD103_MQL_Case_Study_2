@@ -117,36 +117,35 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-gray-900/50" : "bg-blue-gray-50/50"}`} >
-      <Navbar fullWidth className={`min-h-16 flex justify-between ${!darkMode && "sticky"} top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4`}
-        color = {darkMode ? "transparent" : "white"}
-        variant='gradient'
-      >
-        <div></div>
-        <div>
-          <Typography variant="h4" color={darkMode ? "white" : "black"} >Trash Monitoring System</Typography> {/* style={{ border: '1px solid red' }} */}
-        </div>
-        <div className="flex gap-x-3 items-center" >
-          <div className="h-full">
-            <WebSocketIcon connection={wsConnected} width={24} height={24} />
+    <div className={`min-h-screen ${darkMode ? "bg-gray-900/50" : "bg-blue-gray-50/50"}`} > {/* style={{ border: '1px solid red' }} */}
+      <Card color={darkMode ? "gray":"white"} variant="gradient" className='sticky rounded-none' >
+        <CardBody className="flex justify-between">
+          <div className="w-28"></div>
+          <div>
+            <Typography variant="h4" color={darkMode ? "white" : "black"} >Trash Monitoring System</Typography>
           </div>
-          <MoonIcon className={`h-6 w-6 ${darkMode ? "text-white" : "text-blue-gray-400"}`} />
-          <Switch
-            checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
-            color="black"
-            size="sm"
-          />
-        </div>
-        <hr className="fixed mt-16"></hr>
-      </Navbar>
+          
+          <div className="flex gap-x-3 items-center" >
+            <div className="h-full">
+              <WebSocketIcon connection={wsConnected} width={24} height={24} darkMode={darkMode} />
+            </div>
+            <MoonIcon className={`h-6 w-6 ${darkMode ? "text-white" : "text-blue-gray-400"}`} />
+            <Switch
+              checked={darkMode}
+              onChange={() => setDarkMode(!darkMode)}
+              color="black"
+              size="sm"
+            />
+          </div>
+        </CardBody>
+      </Card>
       <div className='p-4 grid gap-6 grid-cols-1 md:grid-cols-3' >
         <Card className={`flex flex-col h-full`} color={darkMode ? "gray":"white"} variant="gradient" >
           <Tabs value="chart" className="flex flex-col justify-between h-full">
             <TabsBody className="h-full">
               <TabPanel value="chart">
                 <CardHeader floated={false} shadow={false} >
-                  <TrashStatusDonut trashCans={trashCans} />
+                  <TrashStatusDonut trashCans={trashCans} darkMode={darkMode} />
                 </CardHeader>
               </TabPanel>
               <TabPanel value="table">
@@ -201,7 +200,7 @@ function App() {
         <Card className={`flex flex-col justify-between`} color={darkMode ? "gray":"white"} variant="gradient" >
           <CardBody>
             <TrashCanIcon 
-              color="white" 
+              color={darkMode ? "gray" : "white"}
               progressColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
               progress={selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height * 100)}
               darkMode={darkMode}
