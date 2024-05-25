@@ -1,8 +1,9 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
+import darkTheme from '../highcharts-theme';
 
-export function TrashStatusDonut ({ trashCans }) {
+export function TrashStatusDonut ({ trashCans, darkMode=false }) {
     const colors = {
         "Empty": "#A9A9A9",
         "Almost Half": "#2ECC40",
@@ -12,6 +13,9 @@ export function TrashStatusDonut ({ trashCans }) {
     };
 
     const [chartOptions, setChartOptions] = useState({
+        chart: {
+            backgroundColor: darkMode ? "transparent" : "white",
+        },
         title: {
             text: "",
             floating: true,
@@ -78,6 +82,9 @@ export function TrashStatusDonut ({ trashCans }) {
 
             setChartOptions({
                 ...chartOptions,
+                chart: {
+                    backgroundColor: darkMode ? "transparent" : "white",
+                },
                 title: {
                     useHTML: true,
                     text: getTitle(),
@@ -96,10 +103,10 @@ export function TrashStatusDonut ({ trashCans }) {
                 colors: getColors()
             });
         }
-    }, [trashCans]);
+    }, [trashCans, darkMode]);
 
     return (
-        <div>
+        <div className={`${darkMode ? "bg-transparent": ""}`}>
             <HighchartsReact
                 highcharts={Highcharts}
                 options={chartOptions}

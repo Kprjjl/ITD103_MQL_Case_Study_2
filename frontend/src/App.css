@@ -34,21 +34,19 @@
 }
 
 body {
-  transition: background-color 0.5s ease, color 0.5s ease;
+  transition: background-color 0.3s, color 0.3s;
 }
-
+.bg-gray-900 {
+  background-color: #1a202c;
+}
+.text-white {
+  color: #fff;
+}
 .bg-gray-800 {
   background-color: #2d3748;
 }
 
-.bg-gray-700 {
-  background-color: #4a5568;
-}
-
-.text-white {
-  color: #ffffff;
-}
-
-.text-black {
-  color: #000000;
+/* linear dark mode gradient background */
+.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, #1a202c, #2d3748);
 }

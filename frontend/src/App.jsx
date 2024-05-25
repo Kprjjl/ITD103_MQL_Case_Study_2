@@ -9,13 +9,16 @@ import {
   Input,
   IconButton,
   Tab, Tabs, TabsHeader, TabsBody, TabPanel,
+  Switch,
 } from "@material-tailwind/react";
+import Highcharts from 'highcharts';
+import darkTheme from './highcharts-theme';
 
 import WebSocketIcon from './components/websocketIcon';
 import TrashCanIcon from './components/TrashCanIcon';
 import TrashStatusDonut from './components/TrashStatusDonut';
 import TrashLevelsChart from './components/TrashLevelsChart';
-import { PencilSquareIcon } from '@heroicons/react/16/solid';
+import { PencilSquareIcon, MoonIcon } from '@heroicons/react/16/solid';
 
 function App() {
   const [trashCans, setTrashCans] = useState([]);
@@ -24,6 +27,7 @@ function App() {
   const [searchLabel, setSearchLabel] = useState('');
   const [dtUnits, setDtUnits] = useState('minute');
   const [wsConnected, setWsConnected] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   function getLevelColor(value) {
     var hue = ((1 - value) * 120).toString(10);
@@ -106,22 +110,42 @@ function App() {
     }
   };
 
+  if (darkMode) {
+      Highcharts.setOptions(darkTheme);
+  } else {
+      Highcharts.setOptions(Highcharts.getOptions()); // Reset to default
+  }
+
   return (
-    <div className="min-h-screen bg-blue-gray-50/50">
-      <Navbar fullWidth className="min-h-16 flex justify-between sticky top-0 z-10 h-max max-w-full rounded-none px-4 py-2 lg:px-8 lg:py-4">
-        <div></div>
-        <Typography variant="h4" color="black" >Trash Monitoring System</Typography> {/* style={{ border: '1px solid red' }} */}
-        <div>
-          <WebSocketIcon connection={wsConnected} width={24} height={24} />
-        </div>
-      </Navbar>
+    <div className={`min-h-screen ${darkMode ? "bg-gray-900/50" : "bg-blue-gray-50/50"}`} > {/* style={{ border: '1px solid red' }} */}
+      <Card color={darkMode ? "gray":"white"} variant="gradient" className='sticky rounded-none' >
+        <CardBody className="flex justify-between">
+          <div className="w-28"></div>
+          <div>
+            <Typography variant="h4" color={darkMode ? "white" : "black"} >Trash Monitoring System</Typography>
+          </div>
+          
+          <div className="flex gap-x-3 items-center" >
+            <div className="h-full">
+              <WebSocketIcon connection={wsConnected} width={24} height={24} darkMode={darkMode} />
+            </div>
+            <MoonIcon className={`h-6 w-6 ${darkMode ? "text-white" : "text-blue-gray-400"}`} />
+            <Switch
+              checked={darkMode}
+              onChange={() => setDarkMode(!darkMode)}
+              color="black"
+              size="sm"
+            />
+          </div>
+        </CardBody>
+      </Card>
       <div className='p-4 grid gap-6 grid-cols-1 md:grid-cols-3' >
-        <Card className="flex flex-col h-full">
+        <Card className={`flex flex-col h-full`} color={darkMode ? "gray":"white"} variant="gradient" >
           <Tabs value="chart" className="flex flex-col justify-between h-full">
             <TabsBody className="h-full">
               <TabPanel value="chart">
                 <CardHeader floated={false} shadow={false} >
-                  <TrashStatusDonut trashCans={trashCans} />
+                  <TrashStatusDonut trashCans={trashCans} darkMode={darkMode} />
                 </CardHeader>
               </TabPanel>
               <TabPanel value="table">
@@ -160,20 +184,26 @@ function App() {
               </TabPanel>
             </TabsBody>
             <CardFooter className="border-t border-blue-gray-100 p-2 min-h-20">
-              <TabsHeader className="min-h-16">
-                <Tab value="chart" className="min-h-14">Trash Can Chart</Tab>
-                <Tab value="table" className="min-h-14">Trash Can Data</Tab>
+              <TabsHeader 
+                className="min-h-16 bg-transparent"
+                indicatorProps={{
+                  className: "bg-gray-500/50 shadow-none !text-gray-900",
+                }}
+              >
+                <Tab value="chart" className={`min-h-14 ${darkMode && "text-white"}`}>Trash Can Chart</Tab>
+                <Tab value="table" className={`min-h-14 ${darkMode && "text-white"}`}>Trash Can Data</Tab>
               </TabsHeader>
             </CardFooter>
           </Tabs>
         </Card>
 
-        <Card className="flex flex-col justify-between">
+        <Card className={`flex flex-col justify-between`} color={darkMode ? "gray":"white"} variant="gradient" >
           <CardBody>
             <TrashCanIcon 
-              color="white" 
+              color={darkMode ? "gray" : "white"}
               progressColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
               progress={selectedTrashCan && (selectedTrashCan.current_level / selectedTrashCan.height * 100)}
+              darkMode={darkMode}
             />
           </CardBody>
           <CardFooter className="border-t border-blue-gray-100 py-3 flex justify-between min-h-20">
@@ -221,7 +251,7 @@ function App() {
           </CardFooter>
         </Card>
 
-        <Card className="flex flex-col justify-between">
+        <Card className={`flex flex-col justify-between`} color={darkMode ? "gray":"white"} variant="gradient" >
           <CardBody className="m-auto w-full">
             {selectedTrashCan && (
               <TrashLevelsChart 
@@ -229,11 +259,12 @@ function App() {
                 trashLevelsData={trashLevelsData} 
                 lineColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
                 dtUnits={dtUnits}
+                darkMode={darkMode}
               />
             )}
           </CardBody>
           <CardFooter className="border-t border-blue-gray-100 p-2 flex justify-between min-h-20">
-            <ButtonGroup size="md" color="white" variant="gradient" className='flex justify-center' fullWidth>
+            <ButtonGroup size="md" color={darkMode ? "gray" : "white"} variant="filled" className='flex justify-center' fullWidth>
               <Button onClick={() => setDtUnits('minute')} >Min</Button>
               <Button onClick={() => setDtUnits('hour')} >Hr</Button>
               <Button onClick={() => setDtUnits('day')} >D</Button>
