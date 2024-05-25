@@ -270,10 +270,10 @@ function App() {
                 }}
               >
                 <Tab value="chart" className={`min-h-14 ${darkMode && "text-white"}`}>
-                  <Typography variant="h6" color="blueGray" >Trash Level Data</Typography>
+                  <Typography variant="h6" color="blueGray" >Trash Level Chart</Typography>
                 </Tab>
                 <Tab value="table" className={`min-h-14 ${darkMode && "text-white"}`}>
-                  <Typography variant="h6" color="blueGray" >Time Series</Typography>
+                  <Typography variant="h6" color="blueGray" >Trash Level Data</Typography>
                 </Tab>
               </TabsHeader>
             </CardFooter>
