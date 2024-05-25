@@ -103,6 +103,11 @@ export function TrashStatusDonut ({ trashCans, darkMode=false }) {
                 colors: getColors()
             });
         }
+        if (darkMode) {
+            Highcharts.setOptions(darkTheme);
+        } else {
+            Highcharts.setOptions(Highcharts.getOptions()); // Reset to default
+        }
     }, [trashCans, darkMode]);
 
     return (

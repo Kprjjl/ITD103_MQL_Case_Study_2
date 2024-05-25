@@ -18,6 +18,8 @@ import WebSocketIcon from './components/websocketIcon';
 import TrashCanIcon from './components/TrashCanIcon';
 import TrashStatusDonut from './components/TrashStatusDonut';
 import TrashLevelsChart from './components/TrashLevelsChart';
+import TrashLevelsTable from './components/TrashLevelsTable';
+import TrashCansTable from './components/TrashCansTable';
 import { PencilSquareIcon, MoonIcon } from '@heroicons/react/16/solid';
 
 function App() {
@@ -110,16 +112,10 @@ function App() {
     }
   };
 
-  if (darkMode) {
-      Highcharts.setOptions(darkTheme);
-  } else {
-      Highcharts.setOptions(Highcharts.getOptions()); // Reset to default
-  }
-
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900/50" : "bg-blue-gray-50/50"}`} > {/* style={{ border: '1px solid red' }} */}
       <Card color={darkMode ? "gray":"white"} variant="gradient" className='sticky rounded-none' >
-        <CardBody className="flex justify-between">
+        <CardBody className="flex justify-between px-6 py-4 sticky">
           <div className="w-28"></div>
           <div>
             <Typography variant="h4" color={darkMode ? "white" : "black"} >Trash Monitoring System</Typography>
@@ -143,47 +139,18 @@ function App() {
         <Card className={`flex flex-col h-full`} color={darkMode ? "gray":"white"} variant="gradient" >
           <Tabs value="chart" className="flex flex-col justify-between h-full">
             <TabsBody className="h-full">
-              <TabPanel value="chart" className="flex items-center h-full" >
+              <TabPanel value="chart" className="flex items-center justify-center h-full" >
                 <CardHeader floated={false} shadow={false} >
                   <TrashStatusDonut trashCans={trashCans} darkMode={darkMode} />
                 </CardHeader>
               </TabPanel>
               <TabPanel value="table" className="p-0">
-                <CardHeader floated={false} shadow={false} className="w-full m-0">
-                  <Card className="p-4">
-                    <div className="mb-4 flex items-center gap-x-2">
-                      <Typography color="blueGray" variant="h4" className="flex-shrink-0">Trash Cans</Typography>
-                      <div className="flex-grow">
-                        <Input label="Search Trash Can" onChange={(e) => setSearchLabel(e.target.value)} />
-                      </div>
-                    </div>
-                    <table className="min-w-full divide-y divide-blue-gray-200">
-                      <thead className="bg-blue-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Label</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Height</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Current Level</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-blue-gray-200">
-                        {trashCans.filter(item => item.label.includes(searchLabel)).map(trashCan => (
-                          <tr key={trashCan._id} className="hover:bg-blue-gray-50 cursor-pointer" onClick={() => setSelectedTrashCan(trashCan)}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="text-sm font-medium text-blue-gray-900">{trashCan.label}</div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-blue-gray-900">{trashCan.height} cm</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-blue-gray-900">{trashCan.current_level} cm</div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </Card>
+                <CardHeader floated={false} shadow={false} className="w-full m-0 bg-transparent p-4">
+                  <TrashCansTable
+                    setSelectedTrashCan={setSelectedTrashCan}
+                    trashCans={trashCans}
+                    darkMode={darkMode}
+                  />
                 </CardHeader>
               </TabPanel>
             </TabsBody>
@@ -194,15 +161,19 @@ function App() {
                   className: "bg-gray-500/50 shadow-none !text-gray-900",
                 }}
               >
-                <Tab value="chart" className={`min-h-14 ${darkMode && "text-white"}`}>Trash Can Chart</Tab>
-                <Tab value="table" className={`min-h-14 ${darkMode && "text-white"}`}>Trash Can Data</Tab>
+                <Tab value="chart" className={`min-h-14 ${darkMode && "text-white"}`}>
+                  <Typography variant="h6" color="blueGray" >Trash Can Chart</Typography>
+                </Tab>
+                <Tab value="table" className={`min-h-14 ${darkMode && "text-white"}`}>
+                  <Typography variant="h6" color="blueGray" >Trash Can Data</Typography>
+                </Tab>
               </TabsHeader>
             </CardFooter>
           </Tabs>
         </Card>
 
         <Card className={`flex flex-col justify-between`} color={darkMode ? "gray":"white"} variant="gradient" >
-          <CardBody>
+          <CardBody className="h-full flex items-center" >
             <TrashCanIcon 
               color={darkMode ? "gray" : "white"}
               progressColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
@@ -256,27 +227,57 @@ function App() {
         </Card>
 
         <Card className={`flex flex-col justify-between`} color={darkMode ? "gray":"white"} variant="gradient" >
-          <CardBody className="m-auto w-full">
-            {selectedTrashCan && (
-              <TrashLevelsChart 
-                trashCan={selectedTrashCan}
-                trashLevelsData={trashLevelsData} 
-                lineColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
-                dtUnits={dtUnits}
-                darkMode={darkMode}
-              />
-            )}
-          </CardBody>
-          <CardFooter className="border-t border-blue-gray-100 p-2 flex justify-between min-h-20">
-            <ButtonGroup size="md" color={darkMode ? "gray" : "white"} variant="filled" className='flex justify-center' fullWidth>
-              <Button onClick={() => setDtUnits('minute')} >Min</Button>
-              <Button onClick={() => setDtUnits('hour')} >Hr</Button>
-              <Button onClick={() => setDtUnits('day')} >D</Button>
-              <Button onClick={() => setDtUnits('week')} >W</Button>
-              <Button onClick={() => setDtUnits('month')} >M</Button>
-              <Button onClick={() => setDtUnits('year')} >Y</Button>
-            </ButtonGroup>
-          </CardFooter>
+          <Tabs value="chart" className="flex flex-col justify-between h-full">
+            <TabsBody className="h-full">
+              <TabPanel value="chart">
+                <CardHeader floated={false} shadow={false}>
+                  <ButtonGroup size="md" color={darkMode ? "gray" : "white"} variant="filled" className='flex justify-center' fullWidth>
+                    <Button onClick={() => setDtUnits('minute')} >Min</Button>
+                    <Button onClick={() => setDtUnits('hour')} >Hr</Button>
+                    <Button onClick={() => setDtUnits('day')} >D</Button>
+                    <Button onClick={() => setDtUnits('week')} >W</Button>
+                    <Button onClick={() => setDtUnits('month')} >M</Button>
+                    <Button onClick={() => setDtUnits('year')} >Y</Button>
+                  </ButtonGroup>
+                </CardHeader>
+                <CardBody className="m-auto w-full">
+                  {selectedTrashCan && (
+                    <TrashLevelsChart 
+                      trashCan={selectedTrashCan}
+                      trashLevelsData={trashLevelsData} 
+                      lineColor={getLevelColor(selectedTrashCan && selectedTrashCan.current_level / selectedTrashCan.height)}
+                      dtUnits={dtUnits}
+                      darkMode={darkMode}
+                    />
+                  )}
+                </CardBody>
+              </TabPanel>
+              <TabPanel value="table" className="p-0 h-full">
+                <CardHeader floated={false} shadow={false} className="w-full h-full m-0 bg-transparent p-4">
+                  <TrashLevelsTable 
+                    itemsPerPage={8}
+                    trashLevelsData={trashLevelsData}
+                    darkMode={darkMode}
+                  />
+                </CardHeader>
+              </TabPanel>
+            </TabsBody>
+            <CardFooter className="border-t border-blue-gray-100 p-2 min-h-20">
+              <TabsHeader
+                className="min-h-16 bg-transparent"
+                indicatorProps={{
+                  className: "bg-gray-500/50 shadow-none !text-gray-900",
+                }}
+              >
+                <Tab value="chart" className={`min-h-14 ${darkMode && "text-white"}`}>
+                  <Typography variant="h6" color="blueGray" >Trash Level Data</Typography>
+                </Tab>
+                <Tab value="table" className={`min-h-14 ${darkMode && "text-white"}`}>
+                  <Typography variant="h6" color="blueGray" >Time Series</Typography>
+                </Tab>
+              </TabsHeader>
+            </CardFooter>
+          </Tabs>
         </Card>
       </div>
     </div>
