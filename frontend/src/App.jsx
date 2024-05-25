@@ -143,43 +143,47 @@ function App() {
         <Card className={`flex flex-col h-full`} color={darkMode ? "gray":"white"} variant="gradient" >
           <Tabs value="chart" className="flex flex-col justify-between h-full">
             <TabsBody className="h-full">
-              <TabPanel value="chart">
+              <TabPanel value="chart" className="flex items-center h-full" >
                 <CardHeader floated={false} shadow={false} >
                   <TrashStatusDonut trashCans={trashCans} darkMode={darkMode} />
                 </CardHeader>
               </TabPanel>
-              <TabPanel value="table">
-                <CardHeader floated={false} shadow={false} >
-                  <div className="mb-4 flex items-center gap-x-2">
-                    <Typography color="blueGray" variant="h4" className="flex-grow" style={{ flexShrink: 0 }}>Trash Cans</Typography>
-                    <Input label="Search Trash Can" onChange={(e) => setSearchLabel(e.target.value)} />
-                  </div>
-                  <table className="min-w-full divide-y divide-blue-gray-200">
-                    <thead className="bg-blue-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Label</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Height</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Current Level</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-blue-gray-200">
-                      {trashCans.filter(item => item.label.includes(searchLabel)).map(trashCan => (
-                        <tr key={trashCan._id} className="hover:bg-blue-gray-50 cursor-pointer" onClick={() => setSelectedTrashCan(trashCan)}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="text-sm font-medium text-blue-gray-900">{trashCan.label}</div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-blue-gray-900">{trashCan.height} cm</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-blue-gray-900">{trashCan.current_level} cm</div>
-                          </td>
+              <TabPanel value="table" className="p-0">
+                <CardHeader floated={false} shadow={false} className="w-full m-0">
+                  <Card className="p-4">
+                    <div className="mb-4 flex items-center gap-x-2">
+                      <Typography color="blueGray" variant="h4" className="flex-shrink-0">Trash Cans</Typography>
+                      <div className="flex-grow">
+                        <Input label="Search Trash Can" onChange={(e) => setSearchLabel(e.target.value)} />
+                      </div>
+                    </div>
+                    <table className="min-w-full divide-y divide-blue-gray-200">
+                      <thead className="bg-blue-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Label</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Height</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-blue-gray-500 uppercase tracking-wider">Current Level</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-blue-gray-200">
+                        {trashCans.filter(item => item.label.includes(searchLabel)).map(trashCan => (
+                          <tr key={trashCan._id} className="hover:bg-blue-gray-50 cursor-pointer" onClick={() => setSelectedTrashCan(trashCan)}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="text-sm font-medium text-blue-gray-900">{trashCan.label}</div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-blue-gray-900">{trashCan.height} cm</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-blue-gray-900">{trashCan.current_level} cm</div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </Card>
                 </CardHeader>
               </TabPanel>
             </TabsBody>
